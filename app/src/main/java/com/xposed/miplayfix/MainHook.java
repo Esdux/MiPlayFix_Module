@@ -13,7 +13,7 @@ public class MainHook extends XposedModule {
     private static final String TARGET_PACKAGE = "com.milink.service";
     private static final String TARGET_CLASS = "com.xiaomi.miplay.mylibrary.mirror.MultiMirrorControl";
     private static final String TARGET_METHOD = "setAudioPlayDelayTime";
-    private static final int NEW_DELAY = 200000; // 微秒
+    private static final int NEW_DELAY = 100000; // 微秒
     private static final String TAG = "MiPlayFix";
 
     @Override
