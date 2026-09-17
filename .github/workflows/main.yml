@@ -5,7 +5,7 @@ on:
     branches: [ "api-101" ]
   pull_request:
     branches: [ "api-101" ]
-  workflow_dispatch:   
+  workflow_dispatch:
 
 jobs:
   build:
@@ -24,6 +24,9 @@ jobs:
 
     - name: Setup Android SDK
       uses: android-actions/setup-android@v3
+      with:
+        packages: 'platform-tools'
+        accept-android-sdk-licenses: true
 
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
