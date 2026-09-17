@@ -31,11 +31,12 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
 
-    - name: Build Debug APK
-      run: ./gradlew assembleDebug
+    - name: Build Release APK
+      run: ./gradlew --quiet assembleRelease --console=plain
 
-    - name: Upload APK
+    - name: Upload Release APK
       uses: actions/upload-artifact@v4
       with:
-        name: MiPlayFix-Module
-        path: app/build/outputs/apk/debug/*.apk
+        name: MiPlayFix-Module-release
+        path: app/build/outputs/apk/release/*.apk
+        if-no-files-found: error
