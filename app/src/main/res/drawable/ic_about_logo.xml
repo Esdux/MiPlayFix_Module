@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  模板占位图标 —— 自绘，不是任何项目的品牌标识。
+
+  技法照搬 HyperMusicCover 的 ic_about_logo.xml（渐变底 + 白色前景 + 108dp viewport，
+  外面用 squircleClip 裁形状），形状本身重画成中性符号：一块白色圆角「卡片」，
+  里面三条渐窄的横条 —— 列表 / 内容 / 设置项的通用隐喻，与四标签模板的气质一致。
+
+  换成自己的图标时：保持 108x108 viewport 与四周 24dp 的留白，
+  底色留渐变或纯色都可以，前景图形控制在 60x60 的中央安全区内，
+  这样在 About 页 100dp 与桌面 108dp 两个尺寸下都不会被裁掉。
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- 底：135° 三色渐变 -->
+    <path android:pathData="M0,0h108v108h-108z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="0" android:startY="0"
+                android:endX="108" android:endY="108"
+                android:type="linear">
+                <item android:offset="0" android:color="#FF2D5BFF" />
+                <item android:offset="0.55" android:color="#FF8A5CF6" />
+                <item android:offset="1" android:color="#FFF06AA8" />
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- 左上角高光：一层极淡的白色斜切，让纯平渐变不那么死板 -->
+    <path
+        android:pathData="M0,0h108v54L0,86z"
+        android:fillColor="#1AFFFFFF" />
+
+    <!-- 中央白色卡片 -->
+    <path
+        android:pathData="M36,28h36a10,10 0 0 1 10,10v32a10,10 0 0 1 -10,10h-36a10,10 0 0 1 -10,-10v-32a10,10 0 0 1 10,-10z"
+        android:fillColor="#FFFFFFFF" />
+
+    <!-- 卡片内三条渐窄横条：宽度 36 / 24 / 14，圆角 4 -->
+    <path
+        android:pathData="M40,44h36a4,4 0 0 1 0,8h-36a4,4 0 0 1 0,-8z"
+        android:fillColor="#FF2D5BFF" />
+    <path
+        android:pathData="M40,57h24a4,4 0 0 1 0,8h-24a4,4 0 0 1 0,-8z"
+        android:fillColor="#FF6C63F0" />
+    <path
+        android:pathData="M40,70h14a4,4 0 0 1 0,8h-14a4,4 0 0 1 0,-8z"
+        android:fillColor="#FFB06BD6" />
+
+</vector>

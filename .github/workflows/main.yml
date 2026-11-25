@@ -3,40 +3,84 @@ name: Build Xposed Module
 on:
   push:
     branches: [ "api-101" ]
+    tags: [ "v*" ]
   pull_request:
     branches: [ "api-101" ]
   workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    - name: Set up JDK 17
-      uses: actions/setup-java@v4
-      with:
-        java-version: '17'
-        distribution: 'temurin'
-        cache: gradle
+      # AGP 9.4 与 libxposed 101 都需要 JDK 21；JDK 17 会在 apply plugin 阶段直接失败
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: gradle
 
-    - name: Setup Android SDK
-      uses: android-actions/setup-android@v3
-      with:
-        packages: 'platform-tools'
-        accept-android-sdk-licenses: true
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          packages: 'platform-tools'
+          accept-android-sdk-licenses: true
 
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
+      # compileSdk 37 来自 miuix 0.9.4 的 AAR 元数据要求，低于 37 会在
+      # checkReleaseAarMetadata 直接失败。注意包名是 android-37.0，不是 android-37。
+      - name: Install SDK platform and build-tools
+        run: |
+          set -euo pipefail
+          sdkmanager --install "platforms;android-37.0" "build-tools;36.1.0"
+          test -d "${ANDROID_HOME}/platforms/android-37.0" || {
+            echo "::error::platforms;android-37.0 未安装成功"
+            ls "${ANDROID_HOME}/platforms" || true
+            exit 1
+          }
+          sdkmanager --list_installed | sed -n '1,40p'
 
-    - name: Build Release APK
-      run: ./gradlew --quiet assembleRelease --console=plain
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
 
-    - name: Upload Release APK
-      uses: actions/upload-artifact@v4
-      with:
-        name: MiPlayFix-Module-release
-        path: app/build/outputs/apk/release/*.apk
-        if-no-files-found: error
+      # Gradle 版本由 wrapper 指定为 9.6.0：AGP 9.4 要求 >= 9.6.0，
+      # 而 9.7.x 会在 mergeExtDex 阶段抛 ProblemLocator 初始化失败。
+      - name: Build release APK
+        run: |
+          ./gradlew assembleRelease --no-daemon --console=plain --stacktrace
+
+      - name: Verify Xposed metadata in APK
+        run: |
+          set -euo pipefail
+          APK=app/build/outputs/apk/release/app-release.apk
+          test -f "$APK" || { echo "::error::未产出 APK"; exit 1; }
+          unzip -l "$APK" | grep -q "META-INF/xposed/module.prop"
+          unzip -l "$APK" | grep -q "META-INF/xposed/scope.list"
+          unzip -l "$APK" | grep -q "META-INF/xposed/java_init.list"
+          # R8 会按 -adaptresourcefilecontents 把入口类名改写成混淆名，
+          # 这里只校验非空，不校验具体类名
+          ENTRY=$(unzip -p "$APK" META-INF/xposed/java_init.list | tr -d '\r\n')
+          test -n "$ENTRY" || { echo "::error::java_init.list 为空，模块无法被加载"; exit 1; }
+          echo "入口类: $ENTRY"
+          echo "scope:"; unzip -p "$APK" META-INF/xposed/scope.list
+          ls -l "$APK"
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: MiPlayFix-Module-release
+          path: app/build/outputs/apk/release/*.apk
+          if-no-files-found: error
+
+      - name: Publish release on tag
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: app/build/outputs/apk/release/app-release.apk
+          generate_release_notes: true

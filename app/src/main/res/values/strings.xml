@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">MiPlay Audio Fix</string>
-    <string name="xposed_description">强制降低小米互联通信服务（妙享/投屏）的音频同步延迟。</string>
+    <string name="app_name">MiPlayFix</string>
+    <string name="xposed_description">调整小米互联服务的音频同步延迟与连接通道类型：可实时修改延迟、按设备区分、把 P2P 请求改走局域网。每项功能独立开关，总开关关闭时所有 Hook 不加载。</string>
 </resources>

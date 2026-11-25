@@ -1,7 +1,11 @@
 *.iml
+*.hprof
 .DS_Store
 .gradle
+.gradle-build
+.kotlin
 /.idea
 /captures
 /local.properties
 build
+*.log

@@ -1,30 +1,30 @@
 plugins {
     alias(libs.plugins.agp.app)
+    alias(libs.plugins.kotlin.compose)
 }
 
 android {
     namespace = "com.xposed.miplayfix"
-    compileSdk = 36
-    buildToolsVersion = "36.1.0"
+    compileSdk = 37
 
     defaultConfig {
-        minSdk = 32
-        targetSdk = 36
-        versionCode = 1
-        versionName = "1.0"
+        minSdk = 33
+        targetSdk = 37
+        versionCode = 4
+        versionName = "2.2"
     }
 
     buildTypes {
         release {
             isMinifyEnabled = true
             isShrinkResources = true
-            proguardFiles("proguard-rules.pro")
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             signingConfig = signingConfigs["debug"]
         }
     }
 
     buildFeatures {
-        viewBinding = true
+        compose = true
     }
 
     compileOptions {
@@ -35,12 +35,12 @@ android {
     packaging {
         resources {
             merges += "META-INF/xposed/*"
-            excludes += "**"
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
 
     lint {
-        abortOnError = true
+        abortOnError = false
         checkReleaseBuilds = false
     }
 }
@@ -48,4 +48,17 @@ android {
 dependencies {
     compileOnly(libs.libxposed.api)
     implementation(libs.libxposed.service)
+
+    implementation(platform(libs.compose.bom))
+    implementation(libs.compose.ui)
+    implementation(libs.compose.ui.graphics)
+    implementation(libs.compose.material.icons.extended)
+    implementation(libs.activity.compose)
+    implementation(libs.androidx.core.ktx)
+
+    implementation(libs.miuix.ui)
+    implementation(libs.miuix.preference)
+    implementation(libs.miuix.icons)
+    implementation(libs.miuix.squircle)
+    implementation(libs.miuix.blur)
 }

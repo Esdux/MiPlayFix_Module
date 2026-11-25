@@ -2,9 +2,36 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" tools:ignore="QueryAllPackagesPermission" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
     <application
+        android:allowBackup="false"
         android:description="@string/xposed_description"
         android:label="@string/app_name"
-        tools:ignore="MissingApplicationIcon" />
+        android:supportsRtl="true"
+        android:theme="@style/Theme.MiPlayFix"
+        tools:ignore="MissingApplicationIcon">
 
+        <activity
+            android:name=".ui.AppShellActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.MiPlayFix">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".ui.screens.FeatureDetailActivity"
+            android:exported="false"
+            android:theme="@style/Theme.MiPlayFix" />
+
+        <activity
+            android:name=".ui.screens.ThemeActivity"
+            android:exported="false"
+            android:theme="@style/Theme.MiPlayFix" />
+    </application>
 </manifest>
